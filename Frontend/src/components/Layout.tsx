@@ -14,11 +14,11 @@ const Layout = ({ children }: any) => {
     );
   }
   return (
-    <div className="bg-blue-900">
+    <div className="bg-blue-900 h-screen">
 
-      <div className="flex h-full w-full">
+      <div className="flex h-full w-full ">
         <Nav />
-        <div className="flex-grow p-4 bg-white mt-2 mr-2">{children}</div>
+        <div className="flex-grow p-4 bg-white mt-2 mr-2 ">{children}</div>
       </div>
     </div>
   );

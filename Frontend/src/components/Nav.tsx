@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const Nav = () => {
     return (
-        <aside className="text-white p-4">
+        <aside className="text-white p-4 h-full w-1/6">
             <div className="mb-4 mr-4">
                 Anjali Emitra
             </div>

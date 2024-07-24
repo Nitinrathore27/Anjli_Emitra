@@ -3,7 +3,6 @@ import Nav from "./Nav";
 
 const Layout = ({ children }: any) => {
   const session = true;
-  const [showNav, setShowNav] = useState(false);
   if (!session) {
     return (
       <div className="bg-slate-900 w-screen h-screen flex items-center">

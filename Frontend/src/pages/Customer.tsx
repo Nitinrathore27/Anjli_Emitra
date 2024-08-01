@@ -141,8 +141,13 @@ const Customer: React.FC = () => {
                                 <DatePicker
                                     selected={basicInfo.dob}
                                     onChange={handleDobChange}
+                                    peekNextMonth
+                                    showMonthDropdown
+                                    showYearDropdown
+                                    dropdownMode="select"
                                     className="input-field"
                                     placeholderText="Date of Birth"
+
                                 />
                             </div>
                         )}
@@ -182,6 +187,7 @@ const Customer: React.FC = () => {
                                 >
                                     <option value="" disabled>Select City</option>
                                     {/* Add city options */}
+                                    [ "City 1", "City 2", "City 3" ]
                                 </select>
                                 <select
                                     name="state"

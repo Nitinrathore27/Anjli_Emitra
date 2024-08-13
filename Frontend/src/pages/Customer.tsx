@@ -4,10 +4,7 @@ import Layout from '../components/Layout';
 import Arrowdown from '../components/icons/Arrowdown';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-
-interface CustomerParams {
-    id: string;
-}
+import { set } from 'react-datepicker/dist/date_utils';
 
 interface Document {
     name: string;
@@ -21,9 +18,24 @@ interface FamilyMember {
 }
 
 const Customer: React.FC = () => {
-    const { id } = useParams<CustomerParams>();
-    const [basicInfo, setBasicInfo] = useState({ name: '', email: '', phone: '', gender: '', dob: new Date() });
-    const [address, setAddress] = useState({ line1: '', line2: '', city: '', state: '', pincode: '', country: '' });
+    const { id } = useParams<Record<string, string>>();
+    const occupationsArray = ["Student", "Shopkeeper", "Farmer", "Other"];
+    const [basicInfo, setBasicInfo] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        gender: '',
+        dob: new Date(),
+        occupation: '',
+    });
+    const [address, setAddress] = useState({
+        line1: '',
+        line2: '',
+        line3: '',
+        city: '',
+        state: '',
+        pincode: '',
+    });
     const [documents, setDocuments] = useState<Document[]>([
         { name: 'Aadhar Card', file: null },
         { name: 'PAN Card', file: null },
@@ -32,16 +44,32 @@ const Customer: React.FC = () => {
     const [family, setFamily] = useState<FamilyMember[]>([
         { name: '', relationship: '', age: '' },
     ]);
+    const [visits, setVisits] = useState([]);
     const [showBasicInfo, setShowBasicInfo] = useState(false);
     const [showAddress, setShowAddress] = useState(false);
     const [showDocuments, setShowDocuments] = useState(false);
     const [showFamily, setShowFamily] = useState(false);
+    const [showVisits, setShowVisits] = useState(false);
 
     useEffect(() => {
         // Fetch customer data by ID and update state
         // For now, we're using placeholder data
-        setBasicInfo({ name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', gender: 'male', dob: new Date('1990-01-01') });
-        setAddress({ line1: '123 Main St', line2: 'Apt 4', city: 'Anytown', state: 'CA', pincode: '12345', country: 'USA' });
+        setBasicInfo({
+            name: 'John Doe',
+            email: 'john@example.com',
+            phone: '123-456-7890',
+            gender: 'male',
+            dob: new Date('1990-01-01'),
+            occupation: 'Student',
+        });
+        setAddress({
+            line1: '123 Main St',
+            line2: 'Apt 4',
+            line3: 'Near Park',
+            city: 'Anytown',
+            state: 'CA',
+            pincode: '12345',
+        });
         setDocuments([
             { name: 'Aadhar Card', file: null },
             { name: 'PAN Card', file: null },
@@ -50,14 +78,21 @@ const Customer: React.FC = () => {
         setFamily([
             { name: 'Jane Doe', relationship: 'Spouse', age: '30' },
         ]);
+        setVisits([
+            { id: 1, date: '2021-09-01', purpose: 'Checkup' },
+            { id: 2, date: '2021-08-01', purpose: 'Follow-up' },
+            { id: 3, date: '2021-07-01', purpose: 'Consultation' },
+        ]);
     }, [id]);
 
-    const handleBasicInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleBasicInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setBasicInfo({ ...basicInfo, [e.target.name]: e.target.value });
     };
 
-    const handleDobChange = (date: Date) => {
-        setBasicInfo({ ...basicInfo, dob: date });
+    const handleDobChange = (date: Date | null) => {
+        if (date) {
+            setBasicInfo({ ...basicInfo, dob: date });
+        }
     };
 
     const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -138,6 +173,17 @@ const Customer: React.FC = () => {
                                     placeholder="Phone"
                                     className="input-field"
                                 />
+                                <select
+                                    name="occupation"
+                                    value={basicInfo.occupation}
+                                    onChange={handleBasicInfoChange}
+                                    className="input-field"
+                                >
+                                    <option value="" disabled>Select Occupation</option>
+                                    {occupationsArray.map((occupation) => (
+                                        <option key={occupation} value={occupation}>{occupation}</option>
+                                    ))}
+                                </select>
                                 <DatePicker
                                     selected={basicInfo.dob}
                                     onChange={handleDobChange}
@@ -147,7 +193,6 @@ const Customer: React.FC = () => {
                                     dropdownMode="select"
                                     className="input-field"
                                     placeholderText="Date of Birth"
-
                                 />
                             </div>
                         )}
@@ -179,6 +224,14 @@ const Customer: React.FC = () => {
                                     placeholder="Address Line 2"
                                     className="input-field"
                                 />
+                                <input
+                                    type="text"
+                                    name="line3"
+                                    value={address.line3}
+                                    onChange={handleAddressChange}
+                                    placeholder="Address Line 3"
+                                    className="input-field"
+                                />
                                 <select
                                     name="city"
                                     value={address.city}
@@ -187,7 +240,9 @@ const Customer: React.FC = () => {
                                 >
                                     <option value="" disabled>Select City</option>
                                     {/* Add city options */}
-                                    [ "City 1", "City 2", "City 3" ]
+                                    {['City 1', 'City 2', 'City 3'].map((city) => (
+                                        <option key={city} value={city}>{city}</option>
+                                    ))}
                                 </select>
                                 <select
                                     name="state"
@@ -207,19 +262,37 @@ const Customer: React.FC = () => {
                                     <option value="" disabled>Select Pincode</option>
                                     {/* Add pincode options */}
                                 </select>
-                                <select
-                                    name="country"
-                                    value={address.country}
-                                    onChange={handleAddressChange}
-                                    className="input-field"
-                                >
-                                    <option value="" disabled>Select Country</option>
-                                    {/* Add country options */}
-                                </select>
                             </div>
                         )}
                     </div>
 
+                    <div className="border-box">
+                        <h2
+                            className="text-lg font-semibold mb-2 cursor-pointer flex justify-between items-center"
+                            onClick={() => setShowVisits(!showVisits)}
+                        >
+                            Visits
+                            <Arrowdown />
+                        </h2>
+                        {showVisits && (
+                            <div className="space-y-4">
+                                <div className="grid grid-cols-2 sm:grid-cols-[50px_150px_1fr] border-b bg-neutral-800 font-medium text-white dark:border-neutral-500 dark:bg-neutral-900">
+                                    <span className="px-6 py-4">Visit ID</span>
+                                    <span className="px-6 py-4">Date</span>
+                                    <span className="px-6 py-4">Purpose</span>
+                                </div>
+                                {visits.map((visit) => (
+                                    <div key={visit.id} className="grid grid-cols-2 sm:grid-cols-[50px_150px_1fr] border-b dark:border-neutral-500">
+                                        <span className="whitespace-nowrap px-6 py-4">{visit.id}</span>
+                                        <span className="whitespace-nowrap px-6 py-4">{visit.date}</span>
+                                        <span className="whitespace-nowrap px-6 py-4 overflow-auto pr-2">{visit.purpose}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+
+                    </div>
                     <div className="border-box">
                         <h2
                             className="text-lg font-semibold mb-2 cursor-pointer flex justify-between items-center"

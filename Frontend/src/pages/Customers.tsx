@@ -1,17 +1,22 @@
 import React, { useState } from "react";
 import Layout from "../components/Layout";
 import ConfirmationModal from "../components/ConfiramationModal";
+import AddCustomerForm from "../components/AddCustomerForm";
+import { useNavigate } from "react-router-dom";
 
 interface Customer {
-    id: number;
+    id: string;
     name: string;
     phone: string;
     lastVisit: string;
+    photo?: string;
 }
 
 const Customers: React.FC = () => {
+    const navigate = useNavigate();
     const [showModal, setShowModal] = useState<boolean>(false);
     const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+    const [showAddCustomerForm, setShowAddCustomerForm] = useState<boolean>(false);
     const [modalConfig, setModalConfig] = useState({
         message: "",
         confirmButtonText: "Confirm",
@@ -22,52 +27,62 @@ const Customers: React.FC = () => {
 
     const customers: Customer[] = [
         {
-            id: 1,
+            id: "AE040824001",
             name: "John Doe",
             phone: "+919898989898",
             lastVisit: "2021-09-01",
+            photo: "https://randomuser.me/api/portraits/men/17.jpg"
         },
         {
-            id: 2,
+            id: "AE040824002",
             name: "Jane Doe",
             phone: "+919898989898",
             lastVisit: "2021-09-01",
+            photo: "https://randomuser.me/api/portraits/men/14.jpg"
         },
         {
-            id: 3,
+            id: "AE040824003",
             name: "John Doe",
             phone: "+919898989898",
             lastVisit: "2021-09-01",
+            photo: "https://randomuser.me/api/portraits/men/11.jpg"
         },
         {
-            id: 4,
+            id: "AE040824004",
             name: "Jane Doe",
             phone: "+919898989898",
             lastVisit: "2021-09-01",
+            photo: "https://randomuser.me/api/portraits/men/10.jpg"
         },
         {
-            id: 5,
+            id: "AE040824005",
             name: "John Doe",
             phone: "+919898989898",
             lastVisit: "2021-09-01",
+
         },
         {
-            id: 6,
+            id: "AE040824006",
             name: "Jane Doe",
             phone: "+919898989898",
             lastVisit: "2021-09-01",
+            photo: "https://randomuser.me/api/portraits/men/21.jpg"
+
         },
         {
-            id: 7,
+            id: "AE040824007",
             name: "John Doe",
             phone: "+919898989898",
             lastVisit: "2021-09-01",
+            photo: "https://randomuser.me/api/portraits/men/12.jpg"
+
         },
         {
-            id: 8,
+            id: "AE040824008",
             name: "Jane Doe",
             phone: "+919898989898",
             lastVisit: "2021-09-01",
+            photo: "https://randomuser.me/api/portraits/men/3.jpg"
         },
 
 
@@ -109,13 +124,39 @@ const Customers: React.FC = () => {
         setSelectedCustomer(null);
     };
 
+    const handleAddCustomer = () => {
+        setShowAddCustomerForm(true);
+    }
+
+    const handleEditCustomer = (customer: Customer) => {
+        // Perform action here
+        console.log(customer);
+        navigate(`/customer/${customer.id}`);
+    }
+
+    const getRandomColor = () => {
+        const colors = [
+            '#FF5733', '#3357FF', '#FF33A6', '#FF8C33', '#33FFF7',
+            '#AA33FF', '#FF3333', '#3374FF',
+        ];
+        return colors[Math.floor(Math.random() * colors.length)];
+    };
     return (
         <Layout>
-            <h1 className="text-2xl font-bold mb-4">Customers Table</h1>
+            <div className="flex justify-between items-center bg-slate-500">
+                <h1 className="text-2xl font-bold mb-4">Customers Table</h1>
+                <button
+                    onClick={handleAddCustomer}
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">
+                    Add New Customer
+                </button>
+            </div>
+
             <div className="overflow-x-auto">
                 <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
                     <thead>
                         <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                            <th className="py-3 px-6 text-left">Photo</th>
                             <th className="py-3 px-6 text-left">Customer ID</th>
                             <th className="py-3 px-6 text-left">Name</th>
                             <th className="py-3 px-6 text-left">Phone</th>
@@ -126,6 +167,19 @@ const Customers: React.FC = () => {
                     <tbody className="text-gray-600 text-sm font-light">
                         {customers.map((customer) => (
                             <tr key={customer.id} className="border-b border-gray-200 hover:bg-gray-100">
+                                <td className="py-3 px-6 text-left">
+                                    {customer.photo || customer.photo === "" ? (
+                                        <img src={customer.photo} alt="Customer" className="w-10 h-10 rounded-full" />
+                                    ) : (
+                                        <div
+                                            className="w-10 h-10 rounded-full text-white font-bold flex items-center justify-center"
+                                            style={{ backgroundColor: getRandomColor() }}
+                                        >
+                                            {customer.name.split(' ').map(word => word[0]).join('')}
+                                        </div>
+                                    )}
+                                </td>
+
                                 <td className="py-3 px-6 text-left whitespace-nowrap">
                                     <div className="flex items-center">
                                         <span className="font-medium">{customer.id}</span>
@@ -144,7 +198,7 @@ const Customers: React.FC = () => {
                                 </td>
                                 <td className="py-3 px-6 text-left flex space-x-4">
                                     <button
-                                        onClick={() => alert(`Edit customer: ${customer.name}`)}
+                                        onClick={() => handleEditCustomer(customer)}
                                         className="text-blue-500 hover:text-blue-700 focus:outline-none">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
@@ -179,6 +233,10 @@ const Customers: React.FC = () => {
                 onCancel={handleCancel}
                 onConfirm={handleConfirm}
             />
+            {showAddCustomerForm && <AddCustomerForm
+                setShow={setShowAddCustomerForm}
+                show={showAddCustomerForm}
+            />}
         </Layout>
     );
 };
